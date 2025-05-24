@@ -329,6 +329,11 @@ cd app
 2. Submit a division task and check its status.
 
 ---
+![image](https://github.com/user-attachments/assets/4f1fccbd-4add-4235-aed7-d42d69a3f6f4)
+![image](https://github.com/user-attachments/assets/e99c3252-796e-44f6-9a6d-86a3b9187f11)
+![image](https://github.com/user-attachments/assets/e42ae2f6-1f0e-4dbe-ba91-ac70df19580a)
+![image](https://github.com/user-attachments/assets/edafc7f0-55be-424b-a69f-9b78eeca71be)
+
 
 ## Common Deployment Errors and Solutions
 ### 1. Internal Server Error
