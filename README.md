@@ -26,8 +26,8 @@ graph TD
     subgraph AWS_VPC["AWS VPC (10.0.0.0/16)"]
         %% Define the instances
         FlaskEC2["Flask EC2 Instance \n PublicIPs: 54.169.132.251  PrivateIPs: 10.0.0.87 \n Web Interface/Task Producer"]
-        CeleryEC2["Celery EC2 Instance\n10.0.0.yy\nTask Worker"]
-        RedisEC2["Redis EC2 Instance\n13.250.122.240\nMessage Broker/Result Backend"]
+        CeleryEC2["Celery EC2 Instance \n PublicIPs: 18.141.189.255    PrivateIPs: 10.0.0.54 \n Task Worker"]
+        RedisEC2["Redis EC2 Instance \nPublicIPs: 13.250.122.240    PrivateIPs: 10.0.0.185 \n Message Broker/Result Backend"]
         
         %% Define security groups
         subgraph FlaskSG["Security Group: Flask-SG"]
