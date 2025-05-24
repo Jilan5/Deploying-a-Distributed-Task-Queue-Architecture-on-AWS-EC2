@@ -75,39 +75,39 @@ cd app
    ```
    ```python
    from celery import Celery
-import logging
-
-# Configure logging
-logging.basicConfig(level=logging.DEBUG)
-logger = logging.getLogger(__name__)
-
-# Define Celery configuration
-REDIS_HOST = '13.250.122.240'  # Replace with your Redis EC2 IP
-REDIS_PORT = 6379
-REDIS_PASSWORD = '123'
-BROKER_URL = f'redis://:{REDIS_PASSWORD}@{REDIS_HOST}:{REDIS_PORT}/0'
-RESULT_BACKEND = f'redis://:{REDIS_PASSWORD}@{REDIS_HOST}:{REDIS_PORT}/0'
-
-# Create Celery instance
-celery = Celery(
-    'tasks',  # Important: Use a consistent app name across instances
-    broker=BROKER_URL,
-    backend=RESULT_BACKEND
-)
-
-# Configure serialization
-celery.conf.update(
-    task_serializer='json',
-    accept_content=['json'],
-    result_serializer='json',
-    broker_connection_retry_on_startup=True
-)
-
-@celery.task(name='tasks.divide')
-def divide(x, y):
-    import time
-    time.sleep(5)  # Simulate a time-consuming task
-    return x / y
+   import logging
+   
+   # Configure logging
+   logging.basicConfig(level=logging.DEBUG)
+   logger = logging.getLogger(__name__)
+   
+   # Define Celery configuration
+   REDIS_HOST = '13.250.122.240'  # Replace with your Redis EC2 IP
+   REDIS_PORT = 6379
+   REDIS_PASSWORD = '123'
+   BROKER_URL = f'redis://:{REDIS_PASSWORD}@{REDIS_HOST}:{REDIS_PORT}/0'
+   RESULT_BACKEND = f'redis://:{REDIS_PASSWORD}@{REDIS_HOST}:{REDIS_PORT}/0'
+   
+   # Create Celery instance
+   celery = Celery(
+       'tasks',  # Important: Use a consistent app name across instances
+       broker=BROKER_URL,
+       backend=RESULT_BACKEND
+   )
+   
+   # Configure serialization
+   celery.conf.update(
+       task_serializer='json',
+       accept_content=['json'],
+       result_serializer='json',
+       broker_connection_retry_on_startup=True
+   )
+   
+   @celery.task(name='tasks.divide')
+   def divide(x, y):
+       import time
+       time.sleep(5)  # Simulate a time-consuming task
+       return x / y
    ```
 
 3. Create a systemd service for Celery:
