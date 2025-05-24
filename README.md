@@ -16,7 +16,54 @@ Our architecture consists of three separate EC2 instances:
 3. **Celery Instance**: Processes tasks asynchronously.
 
 This separation provides better scalability and fault tolerance compared to running everything on a single server.
+# AWS Architecture Diagram for Distributed Task Queue
 
+## System Architecture
+
+```mermaid
+graph TD
+    %% Define the VPC boundary
+    subgraph AWS_VPC["AWS VPC (10.0.0.0/16)"]
+        %% Define the instances
+        FlaskEC2["Flask EC2 Instance\n10.0.0.xx\nWeb Interface/Task Producer"]
+        CeleryEC2["Celery EC2 Instance\n10.0.0.yy\nTask Worker"]
+        RedisEC2["Redis EC2 Instance\n13.250.122.240\nMessage Broker/Result Backend"]
+        
+        %% Define security groups
+        subgraph FlaskSG["Security Group: Flask-SG"]
+            FlaskEC2
+        end
+        
+        subgraph CelerySG["Security Group: Celery-SG"]
+            CeleryEC2
+        end
+        
+        subgraph RedisSG["Security Group: Redis-SG"]
+            RedisEC2
+        end
+        
+        %% Define connections
+        FlaskEC2 -->|TCP/6379\nTask Submission| RedisEC2
+        CeleryEC2 -->|TCP/6379\nTask Retrieval| RedisEC2
+        FlaskEC2 -->|Task Results Query| RedisEC2
+    end
+    
+    %% External connections
+    User["External User/Browser"] -->|HTTP/80\nWeb Interface| FlaskEC2
+    Admin["Administrator\nSSH Access"] -->|SSH/22| FlaskEC2
+    Admin -->|SSH/22| CeleryEC2
+    Admin -->|SSH/22| RedisEC2
+    
+    %% Styling
+    classDef ec2 fill:#f9f,stroke:#333,stroke-width:2px;
+    classDef sg fill:#dfd,stroke:#333,stroke-width:1px,stroke-dasharray: 5 5;
+    classDef external fill:#bbf,stroke:#33c,stroke-width:1px;
+    classDef vpc fill:#ffe,stroke:#333,stroke-width:3px;
+    
+    class FlaskEC2,CeleryEC2,RedisEC2 ec2;
+    class FlaskSG,CelerySG,RedisSG sg;
+    class User,Admin external;
+    class AWS_VPC vpc;
 ---
 
 ## Prerequisites
