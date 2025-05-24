@@ -64,6 +64,7 @@ graph TD
     class FlaskSG,CelerySG,RedisSG sg;
     class User,Admin external;
     class AWS_VPC vpc;
+```
 ---
 
 ## Prerequisites
