@@ -157,33 +157,126 @@ cd app
    ```bash
    nano app.py
    ```
-   **Leave room for code to configure Flask.**
+   ```python
+   from celery import Celery
+   from flask import Flask, request, jsonify
+   import logging
+   import os
+   
+   # Configure logging
+   logging.basicConfig(level=logging.DEBUG)
+   logger = logging.getLogger(__name__)
+   
+   app = Flask(__name__)
+   
+   # Define Celery configuration
+   REDIS_HOST = '13.250.122.240'  # Replace with your Redis EC2 IP
+   REDIS_PORT = 6379
+   REDIS_PASSWORD = '123'
+   BROKER_URL = f'redis://:{REDIS_PASSWORD}@{REDIS_HOST}:{REDIS_PORT}/0'
+   RESULT_BACKEND = f'redis://:{REDIS_PASSWORD}@{REDIS_HOST}:{REDIS_PORT}/0'
+   
+   # Create Celery instance
+   celery = Celery(
+       'tasks',  # Important: Use a consistent app name across instances
+       broker=BROKER_URL,
+       backend=RESULT_BACKEND
+   )
+   
+   # Configure serialization
+   celery.conf.update(
+       task_serializer='json',
+       accept_content=['json'],
+       result_serializer='json',
+       broker_connection_retry_on_startup=True
+   )
+   
+   @app.route("/")
+   def hello():
+       return """
+       <h1>Task Management with Celery</h1>
+       <form action="/submit_task" method="get">
+           <label for="x">Number 1:</label>
+           <input type="number" id="x" name="x" value="10"><br><br>
+           <label for="y">Number 2:</label>
+           <input type="number" id="y" name="y" value="2"><br><br>
+           <input type="submit" value="Calculate Division">
+       </form>
+       <p>Redis Host: {}</p>
+       """.format(REDIS_HOST)
+   
+   @app.route("/submit_task")
+   def submit_task():
+       try:
+           x = int(request.args.get('x', 10))
+           y = int(request.args.get('y', 2))
+           
+           logger.info(f"Submitting task with x={x}, y={y}")
+           
+           # Submit task to Celery
+           task = divide.delay(x, y)
+           task_id = task.id
+           
+           logger.info(f"Task submitted with ID: {task_id}")
+           
+           return f"""
+           <h1>Task Submitted</h1>
+           <p>Task ID: {task_id}</p>
+           <p>Status: <a href="/check_task/{task_id}">Check Status</a></p>
+           <p><a href="/">Back to Home</a></p>
+           """
+       except Exception as e:
+           logger.error(f"Error submitting task: {str(e)}", exc_info=True)
+           return f"""
+           <h1>Error Submitting Task</h1>
+           <p>Error: {str(e)}</p>
+           <p><a href="/">Back to Home</a></p>
+           """
+   
+   @app.route("/check_task/<task_id>")
+   def check_task(task_id):
+       try:
+           task = celery.AsyncResult(task_id)
+           
+           if task.ready():
+               if task.successful():
+                   result = task.get()
+                   status = "Success"
+               else:
+                   result = str(task.result)
+                   status = "Failed"
+           else:
+               result = "Task still processing..."
+               status = "Processing"
+           
+           return f"""
+           <h1>Task Status</h1>
+           <p>Task ID: {task_id}</p>
+           <p>Status: {status}</p>
+           <p>Result: {result}</p>
+           <p><a href="/check_task/{task_id}">Refresh</a></p>
+           <p><a href="/">Back to Home</a></p>
+           """
+       except Exception as e:
+           logger.error(f"Error checking task: {str(e)}", exc_info=True)
+           return f"""
+           <h1>Error Checking Task</h1>
+           <p>Error: {str(e)}</p>
+           <p><a href="/">Back to Home</a></p>
+           """
+   
+   @celery.task(name='tasks.divide')
+   def divide(x, y):
+       import time
+       time.sleep(5)  # Simulate a time-consuming task
+       return x / y
+   
+   if __name__ == "__main__":
+       app.run(debug=True, host="0.0.0.0")
+   ```   
 
-3. Configure Nginx as a reverse proxy:
-   ```bash
-   sudo nano /etc/nginx/sites-available/flask
-   ```
-   Add the following configuration:
-   ```nginx
-   server {
-       listen 80;
-       server_name _;
 
-       location / {
-           proxy_pass http://127.0.0.1:5000;
-           proxy_set_header Host $host;
-           proxy_set_header X-Real-IP $remote_addr;
-       }
-   }
-   ```
-   Enable the site:
-   ```bash
-   sudo ln -s /etc/nginx/sites-available/flask /etc/nginx/sites-enabled
-   sudo nginx -t
-   sudo systemctl restart nginx
-   ```
-
-4. Create a systemd service for Flask:
+3. Create a systemd service for Flask:
    ```bash
    sudo nano /etc/systemd/system/flask.service
    ```
@@ -204,7 +297,7 @@ cd app
    WantedBy=multi-user.target
    ```
 
-5. Start the Flask service:
+4. Start the Flask service:
    ```bash
    sudo systemctl enable flask
    sudo systemctl start flask
