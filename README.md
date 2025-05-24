@@ -27,7 +27,7 @@ graph TD
         %% Define the instances
         FlaskEC2["Flask EC2 Instance \n PublicIPs: 54.169.132.251  PrivateIPs: 10.0.0.87 \n Web Interface/Task Producer"]
         CeleryEC2["Celery EC2 Instance \n PublicIPs: 18.141.189.255    PrivateIPs: 10.0.0.54 \n Task Worker"]
-        RedisEC2["Redis EC2 Instance \nPublicIPs: 13.250.122.240    PrivateIPs: 10.0.0.185 \n Message Broker/Result Backend"]
+        RedisEC2["Redis EC2 Instance \n PublicIPs: 13.250.122.240    PrivateIPs: 10.0.0.185 \n Message Broker/Result Backend"]
         
         %% Define security groups
         subgraph FlaskSG["Security Group: Flask-SG"]
@@ -43,13 +43,13 @@ graph TD
         end
         
         %% Define connections
-        FlaskEC2 -->|TCP/6379\nTask Submission| RedisEC2
-        CeleryEC2 -->|TCP/6379\nTask Retrieval| RedisEC2
+        FlaskEC2 -->|TCP:6379 \n Task Submission| RedisEC2
+        CeleryEC2 -->|TCP:6379 \n Task Retrieval| RedisEC2
         FlaskEC2 -->|Task Results Query| RedisEC2
     end
     
     %% External connections
-    User["External User/Browser"] -->|HTTP/80\nWeb Interface| FlaskEC2
+    User["External User/Browser"] -->|HTTP:80 \n Web Interface| FlaskEC2
     Admin["Administrator\nSSH Access"] -->|SSH/22| FlaskEC2
     Admin -->|SSH/22| CeleryEC2
     Admin -->|SSH/22| RedisEC2
