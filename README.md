@@ -25,7 +25,7 @@ graph TD
     %% Define the VPC boundary
     subgraph AWS_VPC["AWS VPC (10.0.0.0/16)"]
         %% Define the instances
-        FlaskEC2["Flask EC2 Instance \n PublicIPs: 54.169.132.251    PrivateIPs: 10.0.0.87 \nWeb Interface/Task Producer"]
+        FlaskEC2["Flask EC2 Instance \n PublicIPs: 54.169.132.251  PrivateIPs: 10.0.0.87 \n Web Interface/Task Producer"]
         CeleryEC2["Celery EC2 Instance\n10.0.0.yy\nTask Worker"]
         RedisEC2["Redis EC2 Instance\n13.250.122.240\nMessage Broker/Result Backend"]
         
