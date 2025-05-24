@@ -65,6 +65,9 @@ graph TD
     class User,Admin external;
     class AWS_VPC vpc;
 ```
+## Data Flow Diagram
+![Mermaid Chart - Create complex, visual diagrams with text  A smarter way of creating diagrams -2025-05-24-092503](https://github.com/user-attachments/assets/cd6bdcc0-c127-4113-9720-44ef7ea69abe)
+
 ---
 
 ## Prerequisites
