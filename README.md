@@ -101,7 +101,7 @@ cd app
 
    pip install -r requirements.txt
    ```
-2. Create the `app.py` file for Celery:
+2. Rewrite the `app.py` file for Celery:
    ```bash
    nano app.py
    ```
@@ -185,7 +185,7 @@ cd app
    pip install -r requirements.txt
    pip install gunicorn
    ```
-2. Create the `app.py` file for Flask:
+2. Rewrite the `app.py` file for Flask:
    ```bash
    nano app.py
    ```
