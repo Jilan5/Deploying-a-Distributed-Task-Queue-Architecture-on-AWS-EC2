@@ -19,7 +19,7 @@ This separation provides better scalability and fault tolerance compared to runn
 # AWS Architecture Diagram for Distributed Task Queue
 
 ## System Architecture
-
+![aws diagram](https://github.com/Jilan5/Deploying-a-Distributed-Task-Queue-Architecture-on-AWS-EC2/blob/main/Aws%20clery.drawio.png?raw=true)
 ```mermaid
 ---
 config:
